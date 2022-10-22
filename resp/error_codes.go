@@ -1,3 +1,3 @@
-package response
+package resp
 
 const ErrorCodeBadRequest = "bad_request"

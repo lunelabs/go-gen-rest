@@ -132,25 +132,26 @@ import (
 	"net/http"
 	"{{ basePackage }}/resource"
 	"{{ basePackage }}/request"
+	"github.com/lunelabs/go-gen-rest/contrl"
 	"github.com/gorilla/mux"
 )
 
 type {{ .Name | fieldCase }}Controller struct {
 	resource *resource.{{ .Name | fieldCase }}Resource
-	BaseController
+	contrl.BaseController
 }
 
 func (c *{{ .Name | fieldCase }}Controller) Create(w http.ResponseWriter, r *http.Request) {
 	var req request.Create{{ .Name | fieldCase }}
 
-	if err := c.getRequestObject(w, r, &req); err != nil {
+	if err := c.GetRequestObject(w, r, &req); err != nil {
 		return
 	}
 
 	result, err := c.resource.Create(req)
 
 	if err != nil {
-		c.writeJsonResponseWithCode(
+		c.WriteJsonResponseWithCode(
 			w,
 			err.Response,
 			err.StatusCode,
@@ -159,14 +160,14 @@ func (c *{{ .Name | fieldCase }}Controller) Create(w http.ResponseWriter, r *htt
 		return
 	}
 
-	c.writeJsonResponse(w, result)
+	c.WriteJsonResponse(w, result)
 }
 
 func (c *{{ .Name | fieldCase }}Controller) Delete(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["hash"]
 
 	if err := c.resource.Delete(id); err != nil {
-		c.writeJsonResponseWithCode(
+		c.WriteJsonResponseWithCode(
 			w,
 			err.Response,
 			err.StatusCode,
@@ -182,7 +183,7 @@ func (c *{{ .Name | fieldCase }}Controller) Get(w http.ResponseWriter, r *http.R
 	result, err := c.resource.Get(id)
 
 	if err != nil {
-		c.writeJsonResponseWithCode(
+		c.WriteJsonResponseWithCode(
 			w,
 			err.Response,
 			err.StatusCode,
@@ -191,20 +192,20 @@ func (c *{{ .Name | fieldCase }}Controller) Get(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	c.writeJsonResponse(w, result)
+	c.WriteJsonResponse(w, result)
 }
 
 func (c *{{ .Name | fieldCase }}Controller) GetAll(w http.ResponseWriter, r *http.Request) {
 	var filter request.{{ .Name | fieldCase }}Filter
 
-	if err := c.getRequestFilter(w, r, &filter); err != nil {
+	if err := c.GetRequestFilter(w, r, &filter); err != nil {
 		return
 	}
 
 	result, err := c.resource.GetAll(filter)
 
 	if err != nil {
-		c.writeJsonResponseWithCode(
+		c.WriteJsonResponseWithCode(
 			w,
 			err.Response,
 			err.StatusCode,
@@ -213,7 +214,7 @@ func (c *{{ .Name | fieldCase }}Controller) GetAll(w http.ResponseWriter, r *htt
 		return
 	}
 
-	c.writeJsonResponse(w, result)
+	c.WriteJsonResponse(w, result)
 }
 `))
 
@@ -234,6 +235,7 @@ func (r *Rest) generateResource(resource model.Resource, basePackage string) {
 import (
 	"errors"
 	"github.com/lunelabs/go-gen-rest/error"
+	"github.com/lunelabs/go-gen-rest/resp"
 	"{{ basePackage }}/request"
 	"{{ basePackage }}/response"
 )
@@ -269,8 +271,8 @@ func (c *{{ .Name | fieldCase }}Resource) Get(id interface{}) (response.{{ .Name
 	}
 }
 
-func (c *{{ .Name | fieldCase }}Resource) GetAll(filter request.{{ .Name | fieldCase }}Filter) (response.Collection, *error.Error) {
-	return response.Collection{}, &error.Error{
+func (c *{{ .Name | fieldCase }}Resource) GetAll(filter request.{{ .Name | fieldCase }}Filter) (resp.Collection, *error.Error) {
+	return resp.Collection{}, &error.Error{
 		StatusCode: 500,
 		Response:   "not implemented",
 		Err:        errors.New("not implemented"),

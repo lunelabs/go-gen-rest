@@ -1,10 +1,10 @@
-package controller
+package contrl
 
 import (
 	"bytes"
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
-	"github.com/lunelabs/go-gen-rest/response"
+	"github.com/lunelabs/go-gen-rest/resp"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -13,12 +13,12 @@ import (
 type BaseController struct {
 }
 
-func (c *BaseController) getRequestObject(w http.ResponseWriter, r *http.Request, model interface{}) error {
+func (c *BaseController) GetRequestObject(w http.ResponseWriter, r *http.Request, model interface{}) error {
 	content, _ := ioutil.ReadAll(r.Body)
 	r.Body = ioutil.NopCloser(bytes.NewReader(content))
 
 	if err := json.Unmarshal(content, &model); err != nil {
-		c.writeErrorResponse(w, err.Error(), response.ErrorCodeBadRequest, http.StatusBadRequest)
+		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
 
 		return err
 	}
@@ -26,7 +26,7 @@ func (c *BaseController) getRequestObject(w http.ResponseWriter, r *http.Request
 	val := validator.New()
 
 	if err := val.Struct(model); err != nil {
-		c.writeErrorResponse(w, err.Error(), response.ErrorCodeBadRequest, http.StatusBadRequest)
+		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
 
 		return err
 	}
@@ -34,7 +34,7 @@ func (c *BaseController) getRequestObject(w http.ResponseWriter, r *http.Request
 	return nil
 }
 
-func (c *BaseController) getJsonKeys(r *http.Request) ([]string, error) {
+func (c *BaseController) GetJsonKeys(r *http.Request) ([]string, error) {
 	dynamic := make(map[string]interface{})
 	content, _ := ioutil.ReadAll(r.Body)
 	r.Body = ioutil.NopCloser(bytes.NewReader(content))
@@ -52,7 +52,7 @@ func (c *BaseController) getJsonKeys(r *http.Request) ([]string, error) {
 	return keys, nil
 }
 
-func (c *BaseController) getRequestFilter(w http.ResponseWriter, r *http.Request, model interface{}) error {
+func (c *BaseController) GetRequestFilter(w http.ResponseWriter, r *http.Request, model interface{}) error {
 	simpleMap := map[string]interface{}{}
 
 	for k := range r.URL.Query() {
@@ -62,13 +62,13 @@ func (c *BaseController) getRequestFilter(w http.ResponseWriter, r *http.Request
 	encodedJson, err := json.Marshal(simpleMap)
 
 	if err != nil {
-		c.writeErrorResponse(w, err.Error(), response.ErrorCodeBadRequest, http.StatusBadRequest)
+		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
 
 		return err
 	}
 
 	if err := json.Unmarshal(encodedJson, &model); err != nil {
-		c.writeErrorResponse(w, err.Error(), response.ErrorCodeBadRequest, http.StatusBadRequest)
+		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
 
 		return err
 	}
@@ -76,7 +76,7 @@ func (c *BaseController) getRequestFilter(w http.ResponseWriter, r *http.Request
 	val := validator.New()
 
 	if err := val.Struct(model); err != nil {
-		c.writeErrorResponse(w, err.Error(), response.ErrorCodeBadRequest, http.StatusBadRequest)
+		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
 
 		return err
 	}
@@ -84,13 +84,13 @@ func (c *BaseController) getRequestFilter(w http.ResponseWriter, r *http.Request
 	return nil
 }
 
-func (c *BaseController) writeErrorResponse(
+func (c *BaseController) WriteErrorResponse(
 	w http.ResponseWriter,
 	errorMessage string,
 	errorCode string,
 	httpCode int,
 ) {
-	response.WriteErrorResponse(
+	resp.WriteErrorResponse(
 		w,
 		errorMessage,
 		errorCode,
@@ -98,15 +98,15 @@ func (c *BaseController) writeErrorResponse(
 	)
 }
 
-func (c *BaseController) writeJsonResponse(w http.ResponseWriter, r interface{}) {
-	response.WriteJsonResponse(w, r)
+func (c *BaseController) WriteJsonResponse(w http.ResponseWriter, r interface{}) {
+	resp.WriteJsonResponse(w, r)
 }
 
-func (c *BaseController) writeJsonResponseWithCode(w http.ResponseWriter, r interface{}, code int) {
-	response.WriteJsonResponse(w, r)
+func (c *BaseController) WriteJsonResponseWithCode(w http.ResponseWriter, r interface{}, code int) {
+	resp.WriteJsonResponse(w, r)
 }
 
-func (c *BaseController) getRequestIp(r *http.Request) string {
+func (c *BaseController) GetRequestIp(r *http.Request) string {
 	ipAddress := r.Header.Get("X-Real-Ip")
 
 	if len(ipAddress) == 0 {

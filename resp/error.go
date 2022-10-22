@@ -1,4 +1,4 @@
-package response
+package resp
 
 type Error struct {
 	Message string `json:"message"`
