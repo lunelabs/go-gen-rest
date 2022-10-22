@@ -24,8 +24,8 @@ func (r *Rest) Generate() {
 		r.generateCreateRequest(resource)
 		r.generateFilter(resource)
 		r.generateResponse(resource)
-		r.generateController(resource)
-		r.generateResource(resource)
+		r.generateController(resource, r.basePackage)
+		r.generateResource(resource, r.basePackage)
 	}
 }
 
@@ -107,10 +107,13 @@ type {{ .Name | fieldCase }} struct { {{ range $key, $value := .Fields }}
 	requestTemplate.Execute(f, resource)
 }
 
-func (r *Rest) generateController(resource model.Resource) {
+func (r *Rest) generateController(resource model.Resource, basePackage string) {
 	funcMap := template.FuncMap{
 		"fieldCase": fieldCase,
 		"titleCase": strings.Title,
+		"basePackage": func() string {
+			return basePackage
+		},
 	}
 
 	f, err := os.Create("./../../controller/" + resource.Name + "_controller.gen.go")
@@ -127,8 +130,8 @@ package controller
 
 import (
 	"net/http"
-	"github.com/lunelabs/go-gen-rest/resource"
-	"github.com/lunelabs/go-gen-rest/request"
+	"{{ basePackage }}/resource"
+	"{{ basePackage }}/request"
 	"github.com/gorilla/mux"
 )
 
@@ -217,10 +220,13 @@ func (c *{{ .Name | fieldCase }}Controller) GetAll(w http.ResponseWriter, r *htt
 	requestTemplate.Execute(f, resource)
 }
 
-func (r *Rest) generateResource(resource model.Resource) {
+func (r *Rest) generateResource(resource model.Resource, basePackage string) {
 	funcMap := template.FuncMap{
 		"fieldCase": fieldCase,
 		"titleCase": strings.Title,
+		"basePackage": func() string {
+			return basePackage
+		},
 	}
 
 	var requestTemplate = template.Must(template.New("").Funcs(funcMap).Parse(`package resource
@@ -228,8 +234,8 @@ func (r *Rest) generateResource(resource model.Resource) {
 import (
 	"errors"
 	"github.com/lunelabs/go-gen-rest/error"
-	"github.com/lunelabs/go-gen-rest/request"
-	"github.com/lunelabs/go-gen-rest/response"
+	"{{ basePackage }}/request"
+	"{{ basePackage }}/response"
 )
 
 type {{ .Name | fieldCase }}Resource struct {

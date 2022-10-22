@@ -10,7 +10,7 @@ import (
 
 func main() {
 	gen.NewRest(
-		"",
+		"github.com/lunelabs/go-gen-rest",
 		[]model.Resource{
 			model.Resource{
 				Name: "ip_list",
