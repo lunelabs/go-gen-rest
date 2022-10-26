@@ -137,7 +137,7 @@ type Base{{ .Name | fieldCase }}Controller struct {
 func (c *Base{{ .Name | fieldCase }}Controller) Create(w http.ResponseWriter, r *http.Request) {
 	var req request.Create{{ .Name | fieldCase }}
 
-	if err := c.GetRequestObject(w, r, &req); err != nil {
+	if err := c.GetRequestObject(r, &req); err != nil {
 		c.WriteErrorResponse(
 			w,
 			err.ErrorMessage,
@@ -201,7 +201,7 @@ func (c *Base{{ .Name | fieldCase }}Controller) Get(w http.ResponseWriter, r *ht
 func (c *Base{{ .Name | fieldCase }}Controller) GetAll(w http.ResponseWriter, r *http.Request) {
 	var filter request.{{ .Name | fieldCase }}Filter
 
-	if err := c.GetRequestFilter(w, r, &filter); err != nil {
+	if err := c.GetRequestFilter(r, &filter); err != nil {
 		c.WriteErrorResponse(
 			w,
 			err.ErrorMessage,
