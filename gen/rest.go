@@ -151,9 +151,10 @@ func (c *{{ .Name | fieldCase }}Controller) Create(w http.ResponseWriter, r *htt
 	result, err := c.resource.Create(req)
 
 	if err != nil {
-		c.WriteJsonResponseWithCode(
+		c.WriteErrorResponse(
 			w,
-			err.Response,
+			err.ErrorMessage,
+			err.ErrorCode,
 			err.StatusCode,
 		)
 
@@ -167,9 +168,10 @@ func (c *{{ .Name | fieldCase }}Controller) Delete(w http.ResponseWriter, r *htt
 	id := mux.Vars(r)["hash"]
 
 	if err := c.resource.Delete(id); err != nil {
-		c.WriteJsonResponseWithCode(
+		c.WriteErrorResponse(
 			w,
-			err.Response,
+			err.ErrorMessage,
+			err.ErrorCode,
 			err.StatusCode,
 		)
 
@@ -183,9 +185,10 @@ func (c *{{ .Name | fieldCase }}Controller) Get(w http.ResponseWriter, r *http.R
 	result, err := c.resource.Get(id)
 
 	if err != nil {
-		c.WriteJsonResponseWithCode(
+		c.WriteErrorResponse(
 			w,
-			err.Response,
+			err.ErrorMessage,
+			err.ErrorCode,
 			err.StatusCode,
 		)
 
@@ -205,9 +208,10 @@ func (c *{{ .Name | fieldCase }}Controller) GetAll(w http.ResponseWriter, r *htt
 	result, err := c.resource.GetAll(filter)
 
 	if err != nil {
-		c.WriteJsonResponseWithCode(
+		c.WriteErrorResponse(
 			w,
-			err.Response,
+			err.ErrorMessage,
+			err.ErrorCode,
 			err.StatusCode,
 		)
 
@@ -250,7 +254,8 @@ func New{{ .Name | fieldCase }}Resource() *{{ .Name | fieldCase }}Resource {
 func (c *{{ .Name | fieldCase }}Resource) Create(request request.Create{{ .Name | fieldCase }}) (response.{{ .Name | fieldCase }}, *error.Error) {
 	return response.{{ .Name | fieldCase }}{}, &error.Error{
 		StatusCode: 500,
-		Response:   "not implemented",
+		ErrorCode:   "not_implemented",
+		ErrorMessage: "not implemented",
 		Err:        errors.New("not implemented"),
 	}
 }
@@ -258,7 +263,8 @@ func (c *{{ .Name | fieldCase }}Resource) Create(request request.Create{{ .Name 
 func (c *{{ .Name | fieldCase }}Resource) Delete(id interface{}) *error.Error {
 	return &error.Error{
 		StatusCode: 500,
-		Response:   "not implemented",
+		ErrorCode:   "not_implemented",
+		ErrorMessage: "not implemented",
 		Err:        errors.New("not implemented"),
 	}
 }
@@ -266,7 +272,8 @@ func (c *{{ .Name | fieldCase }}Resource) Delete(id interface{}) *error.Error {
 func (c *{{ .Name | fieldCase }}Resource) Get(id interface{}) (response.{{ .Name | fieldCase }}, *error.Error) {
 	return response.{{ .Name | fieldCase }}{}, &error.Error{
 		StatusCode: 500,
-		Response:   "not implemented",
+		ErrorCode:   "not_implemented",
+		ErrorMessage: "not implemented",
 		Err:        errors.New("not implemented"),
 	}
 }
@@ -274,7 +281,8 @@ func (c *{{ .Name | fieldCase }}Resource) Get(id interface{}) (response.{{ .Name
 func (c *{{ .Name | fieldCase }}Resource) GetAll(filter request.{{ .Name | fieldCase }}Filter) (resp.Collection, *error.Error) {
 	return resp.Collection{}, &error.Error{
 		StatusCode: 500,
-		Response:   "not implemented",
+		ErrorCode:   "not_implemented",
+		ErrorMessage: "not implemented",
 		Err:        errors.New("not implemented"),
 	}
 }

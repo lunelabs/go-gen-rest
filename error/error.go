@@ -1,9 +1,10 @@
 package error
 
 type Error struct {
-	StatusCode int
-	Response   interface{}
-	Err        error
+	StatusCode   int
+	ErrorCode    string
+	ErrorMessage string
+	Err          error
 }
 
 func (r *Error) Error() string {
