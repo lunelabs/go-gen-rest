@@ -4,31 +4,78 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
+	resterr "github.com/lunelabs/go-gen-rest/error"
 	"github.com/lunelabs/go-gen-rest/resp"
 	"io/ioutil"
-	"net"
 	"net/http"
 )
 
 type BaseController struct {
 }
 
-func (c *BaseController) GetRequestObject(w http.ResponseWriter, r *http.Request, model interface{}) error {
+func (c *BaseController) GetRequestObject(r *http.Request, model interface{}) *resterr.Error {
 	content, _ := ioutil.ReadAll(r.Body)
 	r.Body = ioutil.NopCloser(bytes.NewReader(content))
 
 	if err := json.Unmarshal(content, &model); err != nil {
-		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
-
-		return err
+		return &resterr.Error{
+			StatusCode:   http.StatusBadRequest,
+			ErrorCode:    resp.ErrorCodeBadRequest,
+			ErrorMessage: err.Error(),
+			Err:          err,
+		}
 	}
 
 	val := validator.New()
 
 	if err := val.Struct(model); err != nil {
-		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
+		return &resterr.Error{
+			StatusCode:   http.StatusBadRequest,
+			ErrorCode:    resp.ErrorCodeBadRequest,
+			ErrorMessage: err.Error(),
+			Err:          err,
+		}
+	}
 
-		return err
+	return nil
+}
+
+func (c *BaseController) GetRequestFilter(r *http.Request, model interface{}) *resterr.Error {
+	simpleMap := map[string]interface{}{}
+
+	for k := range r.URL.Query() {
+		simpleMap[k] = r.URL.Query().Get(k)
+	}
+
+	encodedJson, err := json.Marshal(simpleMap)
+
+	if err != nil {
+		return &resterr.Error{
+			StatusCode:   http.StatusBadRequest,
+			ErrorCode:    resp.ErrorCodeBadRequest,
+			ErrorMessage: err.Error(),
+			Err:          err,
+		}
+	}
+
+	if err := json.Unmarshal(encodedJson, &model); err != nil {
+		return &resterr.Error{
+			StatusCode:   http.StatusBadRequest,
+			ErrorCode:    resp.ErrorCodeBadRequest,
+			ErrorMessage: err.Error(),
+			Err:          err,
+		}
+	}
+
+	val := validator.New()
+
+	if err := val.Struct(model); err != nil {
+		return &resterr.Error{
+			StatusCode:   http.StatusBadRequest,
+			ErrorCode:    resp.ErrorCodeBadRequest,
+			ErrorMessage: err.Error(),
+			Err:          err,
+		}
 	}
 
 	return nil
@@ -52,38 +99,6 @@ func (c *BaseController) GetJsonKeys(r *http.Request) ([]string, error) {
 	return keys, nil
 }
 
-func (c *BaseController) GetRequestFilter(w http.ResponseWriter, r *http.Request, model interface{}) error {
-	simpleMap := map[string]interface{}{}
-
-	for k := range r.URL.Query() {
-		simpleMap[k] = r.URL.Query().Get(k)
-	}
-
-	encodedJson, err := json.Marshal(simpleMap)
-
-	if err != nil {
-		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
-
-		return err
-	}
-
-	if err := json.Unmarshal(encodedJson, &model); err != nil {
-		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
-
-		return err
-	}
-
-	val := validator.New()
-
-	if err := val.Struct(model); err != nil {
-		c.WriteErrorResponse(w, err.Error(), resp.ErrorCodeBadRequest, http.StatusBadRequest)
-
-		return err
-	}
-
-	return nil
-}
-
 func (c *BaseController) WriteErrorResponse(
 	w http.ResponseWriter,
 	errorMessage string,
@@ -104,18 +119,4 @@ func (c *BaseController) WriteJsonResponse(w http.ResponseWriter, r interface{})
 
 func (c *BaseController) WriteJsonResponseWithCode(w http.ResponseWriter, r interface{}, code int) {
 	resp.WriteJsonResponse(w, r)
-}
-
-func (c *BaseController) GetRequestIp(r *http.Request) string {
-	ipAddress := r.Header.Get("X-Real-Ip")
-
-	if len(ipAddress) == 0 {
-		ipAddress = r.RemoteAddr
-	}
-
-	if ip, _, err := net.SplitHostPort(ipAddress); err == nil {
-		return ip
-	}
-
-	return ipAddress
 }
