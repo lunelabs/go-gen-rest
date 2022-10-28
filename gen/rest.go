@@ -49,7 +49,7 @@ func (r *Rest) GenerateCreateRequest(resource model.Resource) {
 package request
 
 type Create{{ .Name | fieldCase }} struct { {{ range $key, $value := .Fields }}
-	{{if not $value.IdField}}{{ $value.Name | fieldCase }} {{ $value.Type }} {{ $tick }}json:"{{ $value.Name }}"{{if $value.FilterValidator }} validate:"{{ $value.FilterValidator }} "{{end}}{{ $tick }}{{ end }}{{ end }}
+	{{if not $value.IdField}}{{ $value.Name | fieldCase }} {{ $value.Type }} {{ $tick }}json:"{{ $value.Name }}"{{if $value.FilterValidator }} validate:"{{ $value.FilterValidator }}"{{end}}{{ $tick }}{{ end }}{{ end }}
 }
 `))
 
