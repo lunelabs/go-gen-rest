@@ -21,16 +21,16 @@ func NewRest(basePackage string, resources []model.Resource) *Rest {
 
 func (r *Rest) Generate() {
 	for _, resource := range r.resources {
-		r.generateCreateRequest(resource)
-		r.generateFilter(resource)
-		r.generateResponse(resource)
-		r.generateBaseController(resource, r.basePackage)
-		r.generateController(resource, r.basePackage)
-		r.generateResource(resource, r.basePackage)
+		r.GenerateCreateRequest(resource)
+		r.GenerateFilter(resource)
+		r.GenerateResponse(resource)
+		r.GenerateBaseController(resource, r.basePackage)
+		r.GenerateController(resource, r.basePackage)
+		r.GenerateResource(resource, r.basePackage)
 	}
 }
 
-func (r *Rest) generateCreateRequest(resource model.Resource) {
+func (r *Rest) GenerateCreateRequest(resource model.Resource) {
 	funcMap := template.FuncMap{
 		"fieldCase": fieldCase,
 		"titleCase": strings.Title,
@@ -56,7 +56,7 @@ type Create{{ .Name | fieldCase }} struct { {{ range $key, $value := .Fields }}
 	requestTemplate.Execute(f, resource)
 }
 
-func (r *Rest) generateFilter(resource model.Resource) {
+func (r *Rest) GenerateFilter(resource model.Resource) {
 	funcMap := template.FuncMap{
 		"fieldCase": fieldCase,
 		"titleCase": strings.Title,
@@ -82,7 +82,7 @@ type {{ .Name | fieldCase }}Filter struct { {{ range $key, $value := .Fields }}
 	requestTemplate.Execute(f, resource)
 }
 
-func (r *Rest) generateResponse(resource model.Resource) {
+func (r *Rest) GenerateResponse(resource model.Resource) {
 	funcMap := template.FuncMap{
 		"fieldCase": fieldCase,
 		"titleCase": strings.Title,
@@ -108,7 +108,7 @@ type {{ .Name | fieldCase }} struct { {{ range $key, $value := .Fields }}
 	requestTemplate.Execute(f, resource)
 }
 
-func (r *Rest) generateBaseController(resource model.Resource, basePackage string) {
+func (r *Rest) GenerateBaseController(resource model.Resource, basePackage string) {
 	funcMap := template.FuncMap{
 		"fieldCase": fieldCase,
 		"titleCase": strings.Title,
@@ -240,7 +240,7 @@ func (c *Base{{ .Name | fieldCase }}Controller) GetAll(w http.ResponseWriter, r 
 	baseControllerTemplate.Execute(f, resource)
 }
 
-func (r *Rest) generateController(resource model.Resource, basePackage string) {
+func (r *Rest) GenerateController(resource model.Resource, basePackage string) {
 	funcMap := template.FuncMap{
 		"fieldCase": fieldCase,
 		"titleCase": strings.Title,
@@ -280,7 +280,7 @@ func New{{ .Name | fieldCase }}Controller(resource *resource.{{ .Name | fieldCas
 	}
 }
 
-func (r *Rest) generateResource(resource model.Resource, basePackage string) {
+func (r *Rest) GenerateResource(resource model.Resource, basePackage string) {
 	funcMap := template.FuncMap{
 		"fieldCase": fieldCase,
 		"titleCase": strings.Title,
