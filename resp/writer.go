@@ -18,8 +18,17 @@ func WriteErrorResponse(
 		},
 	}
 
+	jsonResponse, err := json.MarshalIndent(result, "", "    ")
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(httpCode)
-	WriteJsonResponse(w, result)
+	w.Write(jsonResponse)
 }
 
 func WriteJsonResponse(w http.ResponseWriter, response interface{}) {
@@ -27,6 +36,7 @@ func WriteJsonResponse(w http.ResponseWriter, response interface{}) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+
 		return
 	}
 
