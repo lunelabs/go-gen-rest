@@ -1,5 +1,5 @@
 package resp
 
 type Collection struct {
-	Data []interface{} `json:"data"`
+	Data interface{} `json:"data"`
 }
